@@ -22,3 +22,23 @@ main:
 
 factorial:
     # YOUR CODE HERE
+    add t1, a0, x0 # return value
+    add t2, a0, x0 # counter
+    addi t3, x0, 2 # compare value
+loop:
+    blt t2, t3, break
+    addi t2, t2, -1
+    mul t1, t1, t2
+    j loop
+break:
+    add a0, t1, x0
+    ret
+
+# int factorial(int n) {
+#     int result = n;
+#     while (n > 2) {
+#         n--;
+#         result *= n;
+#     }
+#     return result;
+# }

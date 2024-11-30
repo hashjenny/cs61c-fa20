@@ -71,3 +71,14 @@ exit:
     addi sp, sp, 20
     # END EPILOGUE
     jr ra
+
+# k -> t0
+# 在 main 函数中，addi t0, x0, 0 初始化了 k 为 0。之后，t0 用于存储循环变量 k，它在每次循环时通过 addi t0, t0, 1 自增，直到 source[k] == 0 为止。
+
+# sum -> s0
+# 在 main 函数开始时，addi s0, x0, 0 将 sum 初始化为 0。每次在循环中计算出 fun(source[k]) 的结果后，sum 会通过 add s0, s0, t2 累加该结果，最终返回累加的值。
+
+# 源数组 source 的地址通过 la s1, source 加载到寄存器 s1 中，s1 用作指向 source 数组的指针。
+# 目标数组 dest 的地址通过 la s2, dest 加载到寄存器 s2 中，s2 用作指向 dest 数组的指针。
+
+# 在每次循环时，s3 = k * 4 计算 k 对应的字节偏移量（每个元素4字节）。然后通过 add t1, s1, s3 计算出 source[k] 的地址，lw t2, 0(t1) 用来加载 source[k] 的值。
