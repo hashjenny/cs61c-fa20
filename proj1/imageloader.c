@@ -66,7 +66,7 @@ void writeData(Image *image) {
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
                 Color c = cp[i][j];
-                printf("%3u %3u %3u", c.G, c.G, c.B);
+                printf("%3u %3u %3u", c.R, c.G, c.B);
                 if (j < cols - 1) {
                     printf("   ");
                 }

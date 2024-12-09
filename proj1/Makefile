@@ -3,7 +3,7 @@ CFLAGS = -g -Wall -std=c99 -c
 LDFLAGS = -g -Wall
 VGFLAGS = --tool=memcheck --leak-check=full --dsymutil=yes --track-origins=yes
 
-all: PartA PartB
+all: PartA PartB MyPart
 
 PartA: imageloader.o imageloadertester.o steganography.o
 	$(CC) $(LDFLAGS) -o imageloadertester imageloader.o imageloadertester.o
@@ -18,6 +18,7 @@ imageloader: imageloader.o imageloadertester.o
 	./imageloadertester testInputs/JohnConway.ppm > studentOutputs/JohnConway.ppm
 	diff testInputs/JohnConway.ppm studentOutputs/JohnConway.ppm
 	echo "Diff check: The above lines were different than expected. If no lines show up, then this passed"
+
 
 imagememcheck: imageloader
 	echo "Running memory check on imageloadertest"
@@ -49,3 +50,4 @@ clean:
 	rm -f gameOfLife
 	rm -f steganography
 	rm -f imageloadertester
+
