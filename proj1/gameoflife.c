@@ -61,12 +61,17 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 	//YOUR CODE HERE
     Color color = image->image[row][col];
 
-    Color *neighbors = (Color *) malloc(8 * sizeof(Color));
+    // Color *neighbors = (Color *) malloc(8 * sizeof(Color));
+    Color neighbors[8];
 
-    uint32_t top = row > 0 ? (row - 1) : image->rows - 1;
-    uint32_t down = row < image->rows - 1 ? (row + 1) : 0;
-    uint32_t left = col > 0 ? (col - 1) : image->cols - 1;
-    uint32_t right = col < image->cols + 1 ? (col + 1) : 0;
+    // uint32_t top = row > 0 ? (row - 1) : image->rows - 1;
+    // uint32_t down = row < image->rows - 1 ? (row + 1) : 0;
+    // uint32_t left = col > 0 ? (col - 1) : image->cols - 1;
+    // uint32_t right = col < image->cols + 1 ? (col + 1) : 0;
+    uint32_t top = (row + image->rows - 1) % image->rows;
+    uint32_t down = (row + 1) % image->rows;
+    uint32_t left = (col + image->cols - 1) % image->cols;
+    uint32_t right = (col + 1) % image->cols;
 
     neighbors[0] = image->image[row][right];
     neighbors[1] = image->image[down][right];
@@ -80,7 +85,7 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
     uint8_t new_red = get_next(neighbors, color.R, rule, 0);
     uint8_t new_green = get_next(neighbors, color.G, rule, 1);
     uint8_t new_blue = get_next(neighbors, color.B, rule, 2);
-    free(neighbors);
+    // free(neighbors);
 
     Color *pixel = (Color *) malloc(sizeof(Color));
     pixel->R = new_red;
