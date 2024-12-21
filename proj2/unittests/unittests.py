@@ -241,26 +241,42 @@ class TestReadMatrix(TestCase):
         # allocate space to hold the rows and cols output parameters
         rows = t.array([-1])
         cols = t.array([-1])
-
         # load the addresses to the output parameters into the argument registers
-        raise NotImplementedError("TODO")
-        # TODO
-
+        result = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         # call the read_matrix function
+        t.input_array("a1", rows)
+        t.input_array("a2", cols)
         t.call("read_matrix")
-
         # check the output from the function
-        # TODO
-
+        t.check_array_pointer("a0", result)
         # generate assembly and run it through venus
         t.execute(fail=fail, code=code)
 
     def test_simple(self):
         self.do_read_matrix()
 
+    # def test_error_filename(self):
+    #     t = AssemblyTest(self, "read_matrix.s")
+    #     # load address to the name of the input file into register a0
+    #     t.input_read_filename("a0", "inputs/test_read_matrix/error_name.bin")
+
+    #     # allocate space to hold the rows and cols output parameters
+    #     rows = t.array([-1])
+    #     cols = t.array([-1])
+    #     # load the addresses to the output parameters into the argument registers
+    #     result = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    #     # call the read_matrix function
+    #     t.input_array("a1", rows)
+    #     t.input_array("a2", cols)
+    #     t.call("read_matrix")
+    #     # check the output from the function
+    #     t.check_array_pointer("a0", result)
+    #     # generate assembly and run it through venus
+    #     t.execute(fail="fopen", code=90)
+
     @classmethod
     def tearDownClass(cls):
-        print_coverage("read_matrix.s", verbose=False)
+        print_coverage("read_matrix.s", verbose=True)
 
 
 class TestWriteMatrix(TestCase):
