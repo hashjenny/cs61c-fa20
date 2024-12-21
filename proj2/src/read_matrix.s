@@ -46,20 +46,14 @@ read_matrix:
     li a2, 0
     jal ra, fopen
     li t5, -1
-    bne a0, t5, success_fopen
-    li a1, 90
-    jal exit2
-success_fopen:
+    beq a0, t5, fail_fopen
     mv s3, a0  # file descriptor
 
 # =====================
     # malloc 8 bytes
     li a0, 8
     jal ra, malloc
-    bne a0, x0, success_malloc
-    li a1, 88
-    jal exit2
-success_malloc:
+    beq a0, x0, fail_malloc
     mv s4, a0  # malloc memory
 
     # fread
@@ -68,10 +62,8 @@ success_malloc:
     li a3, 8
     jal ra, fread
     li t4, 8  # temp value
-    beq a0, t4, success_fread
-    li a1, 91
-    jal exit2
-success_fread:
+    bne a0, t4, fail_fread
+
     lw t1, 0(s4)  # row
     lw t2, 4(s4)  # col
     mul t3, t1, t2
@@ -84,10 +76,7 @@ success_fread:
     # malloc total bytes
     mv a0, s5
     jal ra, malloc
-    bne a0, x0, success_malloc2
-    li a1, 88
-    jal exit2
-success_malloc2:
+    beq a0, x0, fail_malloc
     mv s4, a0  # malloc memory
 
     # fread total bytes
@@ -95,10 +84,7 @@ success_malloc2:
     mv a2, s4
     mv a3, s5
     jal ra, fread
-    beq a0, s5, success_fread2
-    li a1, 91
-    jal exit2
-success_fread2:
+    bne a0, s5, fail_fread
 
 # =====================
 
@@ -106,10 +92,7 @@ success_fread2:
     # fclose
     mv a1, s3
     jal ra, fclose
-    beq a0, x0, success_fclose
-    li a1, 92
-    jal exit2
-success_fclose:
+    bne a0, x0, fail_fclose
 # =====================
 
     mv a0, s4
@@ -125,3 +108,20 @@ success_fclose:
     addi sp, sp, 28
 
     ret
+
+fail_fopen:
+    li a1, 90
+    jal exit2
+
+fail_malloc:
+    li a1, 88
+    jal exit2
+
+fail_fread:
+    li a1, 91
+    jal exit2
+
+# TODO lack of unit test
+fail_fclose:
+    li a1, 92
+    jal exit2

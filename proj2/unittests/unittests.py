@@ -336,9 +336,9 @@ class TestReadMatrix(TestCase):
     def test_simple(self):
         self.do_read_matrix()
 
-    def test_error_filename(self):
+    def test_fail_fopen(self):
         t = AssemblyTest(self, "read_matrix.s")
-        t.input_read_filename("a0", "inputs/test_read_matrix/error_name.bin")
+        t.input_read_filename("a0", "inputs/test_read_matrix/test_fopen.bin")
         rows = t.array([-1])
         cols = t.array([-1])
         result = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -347,6 +347,42 @@ class TestReadMatrix(TestCase):
         t.call("read_matrix")
         t.check_array_pointer("a0", result)
         t.execute(fail="fopen", code=90)
+
+    def test_fail_malloc(self):
+        t = AssemblyTest(self, "read_matrix.s")
+        t.input_read_filename("a0", "inputs/test_read_matrix/test_malloc.bin")
+        rows = t.array([-1])
+        cols = t.array([-1])
+        result = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        t.input_array("a1", rows)
+        t.input_array("a2", cols)
+        t.call("read_matrix")
+        t.check_array_pointer("a0", result)
+        t.execute(fail="malloc", code=88)
+
+    def test_fail_fread(self):
+        t = AssemblyTest(self, "read_matrix.s")
+        t.input_read_filename("a0", "inputs/test_read_matrix/test_fread.bin")
+        rows = t.array([-1])
+        cols = t.array([-1])
+        result = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        t.input_array("a1", rows)
+        t.input_array("a2", cols)
+        t.call("read_matrix")
+        t.check_array_pointer("a0", result)
+        t.execute(fail="fread", code=91)
+
+    def test_fail_fclose(self):
+        t = AssemblyTest(self, "read_matrix.s")
+        t.input_read_filename("a0", "inputs/test_read_matrix/test_fopen.bin")
+        rows = t.array([-1])
+        cols = t.array([-1])
+        result = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        t.input_array("a1", rows)
+        t.input_array("a2", cols)
+        t.call("read_matrix")
+        t.check_array_pointer("a0", result)
+        t.execute(fail="fclose", code=92)
 
     @classmethod
     def tearDownClass(cls):
