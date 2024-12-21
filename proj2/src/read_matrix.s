@@ -47,7 +47,7 @@ read_matrix:
     jal ra, fopen
     li t5, -1
     bne a0, t5, success_fopen
-    li a0, 90
+    li a1, 90
     jal exit2
 success_fopen:
     mv s3, a0  # file descriptor
@@ -57,7 +57,7 @@ success_fopen:
     li a0, 8
     jal ra, malloc
     bne a0, x0, success_malloc
-    li a0, 88
+    li a1, 88
     jal exit2
 success_malloc:
     mv s4, a0  # malloc memory
@@ -69,7 +69,7 @@ success_malloc:
     jal ra, fread
     li t4, 8  # temp value
     beq a0, t4, success_fread
-    li a0, 91
+    li a1, 91
     jal exit2
 success_fread:
     lw t1, 0(s4)  # row
@@ -85,7 +85,7 @@ success_fread:
     mv a0, s5
     jal ra, malloc
     bne a0, x0, success_malloc2
-    li a0, 88
+    li a1, 88
     jal exit2
 success_malloc2:
     mv s4, a0  # malloc memory
@@ -96,7 +96,7 @@ success_malloc2:
     mv a3, s5
     jal ra, fread
     beq a0, s5, success_fread2
-    li a0, 91
+    li a1, 91
     jal exit2
 success_fread2:
 
@@ -107,7 +107,7 @@ success_fread2:
     mv a1, s3
     jal ra, fclose
     beq a0, x0, success_fclose
-    li a0, 92
+    li a1, 92
     jal exit2
 success_fclose:
 # =====================

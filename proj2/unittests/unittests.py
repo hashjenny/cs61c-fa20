@@ -59,6 +59,15 @@ class TestRelu(TestCase):
         t.check_array(array0, [0, 0, 1])
         t.execute()
 
+    def test_error_len(self):
+        t = AssemblyTest(self, "relu.s")
+        array0 = t.array([0, -1, 1])
+        t.input_array("a0", array0)
+        t.input_scalar("a1", 0)
+        t.call("relu")
+        t.check_array(array0, [0, 0, 1])
+        t.execute(code=78)
+
     @classmethod
     def tearDownClass(cls):
         print_coverage("relu.s", verbose=False)
@@ -110,6 +119,24 @@ class TestArgmax(TestCase):
         t.call("argmax")
         t.check_scalar("a0", 0)
         t.execute()
+
+    def test_error_len(self):
+        t = AssemblyTest(self, "argmax.s")
+        array0 = t.array(
+            [
+                2,
+                3,
+                99,
+                6,
+                -9,
+                -100,
+            ]
+        )
+        t.input_array("a0", array0)
+        t.input_scalar("a1", -1)
+        t.call("argmax")
+        t.check_scalar("a0", 2)
+        t.execute(code=77)
 
     @classmethod
     def tearDownClass(cls):
@@ -171,6 +198,45 @@ class TestDot(TestCase):
         t.check_scalar("a0", 22)
         t.execute()
 
+    def test_error_len(self):
+        t = AssemblyTest(self, "dot.s")
+        array0 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array1 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        t.input_array("a0", array0)
+        t.input_array("a1", array1)
+        t.input_scalar("a2", -3)
+        t.input_scalar("a3", 1)
+        t.input_scalar("a4", 2)
+        t.call("dot")
+        t.check_scalar("a0", 22)
+        t.execute(code=75)
+
+    def test_error_stride0(self):
+        t = AssemblyTest(self, "dot.s")
+        array0 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array1 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        t.input_array("a0", array0)
+        t.input_array("a1", array1)
+        t.input_scalar("a2", 3)
+        t.input_scalar("a3", -1)
+        t.input_scalar("a4", 2)
+        t.call("dot")
+        t.check_scalar("a0", 22)
+        t.execute(code=76)
+
+    def test_error_stride1(self):
+        t = AssemblyTest(self, "dot.s")
+        array0 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array1 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        t.input_array("a0", array0)
+        t.input_array("a1", array1)
+        t.input_scalar("a2", 3)
+        t.input_scalar("a3", 1)
+        t.input_scalar("a4", -2)
+        t.call("dot")
+        t.check_scalar("a0", 22)
+        t.execute(code=76)
+
     @classmethod
     def tearDownClass(cls):
         print_coverage("dot.s", verbose=False)
@@ -226,6 +292,21 @@ class TestMatmul(TestCase):
             [2, 2, 2, 2],
         )
 
+    def test_m0_sense_1(self):
+        self.do_matmul([1, 1, 1, 1], 2, 0, [1, 1, 1, 1], 2, 2, [2, 2, 2, 2], code=72)
+
+    def test_m0_sense_0(self):
+        self.do_matmul([1, 1, 1, 1], 0, 2, [1, 1, 1, 1], 2, 2, [2, 2, 2, 2], code=72)
+
+    def test_m1_sense_0(self):
+        self.do_matmul([1, 1, 1, 1], 2, 2, [1, 1, 1, 1], 0, 2, [2, 2, 2, 2], code=73)
+
+    def test_m1_sense_1(self):
+        self.do_matmul([1, 1, 1, 1], 2, 2, [1, 1, 1, 1], 2, 0, [2, 2, 2, 2], code=73)
+
+    def test_dimensions_match(self):
+        self.do_matmul([1, 1, 1, 1], 2, 1, [1, 1, 1, 1], 2, 2, [2, 2, 2, 2], code=74)
+
     @classmethod
     def tearDownClass(cls):
         print_coverage("matmul.s", verbose=False)
@@ -255,24 +336,17 @@ class TestReadMatrix(TestCase):
     def test_simple(self):
         self.do_read_matrix()
 
-    # def test_error_filename(self):
-    #     t = AssemblyTest(self, "read_matrix.s")
-    #     # load address to the name of the input file into register a0
-    #     t.input_read_filename("a0", "inputs/test_read_matrix/error_name.bin")
-
-    #     # allocate space to hold the rows and cols output parameters
-    #     rows = t.array([-1])
-    #     cols = t.array([-1])
-    #     # load the addresses to the output parameters into the argument registers
-    #     result = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    #     # call the read_matrix function
-    #     t.input_array("a1", rows)
-    #     t.input_array("a2", cols)
-    #     t.call("read_matrix")
-    #     # check the output from the function
-    #     t.check_array_pointer("a0", result)
-    #     # generate assembly and run it through venus
-    #     t.execute(fail="fopen", code=90)
+    def test_error_filename(self):
+        t = AssemblyTest(self, "read_matrix.s")
+        t.input_read_filename("a0", "inputs/test_read_matrix/error_name.bin")
+        rows = t.array([-1])
+        cols = t.array([-1])
+        result = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        t.input_array("a1", rows)
+        t.input_array("a2", cols)
+        t.call("read_matrix")
+        t.check_array_pointer("a0", result)
+        t.execute(fail="fopen", code=90)
 
     @classmethod
     def tearDownClass(cls):
